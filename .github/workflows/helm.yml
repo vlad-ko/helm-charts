@@ -22,7 +22,7 @@ jobs:
   publish:
     name: Release
     needs: lint
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && needs.lint.result == 'success'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.lint.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
