@@ -20,7 +20,7 @@ such as Minio.
 
 Additional configuration including the number of web, api, and worker replicas and
 their CPU and memory limits can be tuned by overriding `values.yaml`.  See
-[codecov/values.yaml](/codecov/values.yaml) for the
+[codecov/values.yaml](./codecov/values.yaml) for the
 available variables.
 
 ## Installation
