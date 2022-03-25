@@ -1,0 +1,161 @@
+{{- if .Values.demo.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: master
+          image: redis
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+spec:
+  ports:
+    - port: 6379
+      protocol: TCP
+      name: http
+      targetPort: 6379
+  selector:
+    app: redis
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgresql-db
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgresql-db-disk
+          mountPath: /data
+        env:
+        - name: POSTGRES_PASSWORD
+          value: testpassword
+        - name: PGDATA
+          value: /data/pgdata
+# Volume Claim
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-db-disk
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 25Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+spec:
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: http
+      targetPort: 5432
+  selector:
+    app: postgres
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statsd
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: statsd
+  template:
+    metadata:
+      labels:
+        app: statsd
+    spec:
+      containers:
+        - env:
+            - name: THIS_POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          args:
+            - --statsd.listen-udp=:8125
+            - --statsd.listen-tcp=:8125
+          image: prom/statsd-exporter:v0.22.4
+          imagePullPolicy: Always
+          name: api
+          ports:
+            - containerPort: 8125
+            - containerPort: 9102
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statsd
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+spec:
+  ports:
+    - port: 8125
+      name: udp
+      protocol: UDP
+      targetPort: 8125
+    - port: 8125
+      name: tcp
+      protocol: TCP
+      targetPort: 8125
+    - port: 9102
+      name: web
+      protocol: TCP
+      targetPort: 9102
+  selector:
+    app: statsd
+  type: NodePort
+
+{{- end }}

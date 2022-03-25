@@ -226,3 +226,6 @@ envFrom: []
 #     name: env-secret
 # - configMapRef:
 #     name: config-map
+
+demo:
+  enabled: false

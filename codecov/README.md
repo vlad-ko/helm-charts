@@ -26,7 +26,7 @@ available variables.
 ## Installation
 
 ```
-helm install codecov --values values.yaml ./codecov
+helm install codecov --values ./codecov/values.yaml ./codecov
 ```
 
 ## Upgrade
