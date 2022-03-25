@@ -1,0 +1,7 @@
+apiVersion: v1
+description: A Helm chart to deploy the Codecov self hosted application to Kubernetes
+name: codecov
+version: 2.0.0
+maintainers:
+  - email: devops@codecov.io
+    name: Codecov

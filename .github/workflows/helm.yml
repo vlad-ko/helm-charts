@@ -1,0 +1,35 @@
+name: helm
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  lint:
+    container:
+      image: quay.io/helmpack/chart-testing:v3.5.1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Lint Codecov
+        run: ct lint --chart-dirs . --charts codecov
+
+  publish:
+    name: Release
+    needs: lint
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && needs.lint.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        with:
+          semantic_version: 17
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHA_TOKEN }}
