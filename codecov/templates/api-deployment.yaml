@@ -82,11 +82,11 @@ spec:
 {{ toYaml .Values.api.deployment.resources | indent 10 }}
         volumeMounts:
         {{- range .Values.secretMounts }}
-          - name: {{ .name }}
-            mountPath: {{ .path }}
-            {{- if .subPath }}
-            subPath: {{ .subPath }}
-            {{- end }}
+        - name: {{ .name }}
+          mountPath: {{ .path }}
+          {{- if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
         {{- end }}
         - mountPath: /config
           name: codecov-yml
@@ -94,9 +94,9 @@ spec:
       restartPolicy: Always
       volumes:
       {{- range .Values.secretMounts }}
-        - name: {{ .name }}
-          secret:
-            secretName: {{ .secretName }}
+      - name: {{ .name }}
+        secret:
+          secretName: {{ .secretName }}
       {{- end }}
       - name: codecov-yml
         configMap:
