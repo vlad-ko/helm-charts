@@ -85,11 +85,11 @@ spec:
 {{ toYaml .Values.web.deployment.resources | indent 10 }}
         volumeMounts:
         {{- range .Values.secretMounts }}
-          - name: {{ .name }}
-            mountPath: {{ .path }}
-            {{- if .subPath }}
-            subPath: {{ .subPath }}
-            {{- end }}
+        - name: {{ .name }}
+          mountPath: {{ .path }}
+          {{- if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
         {{- end }}
         - mountPath: /config
           name: codecov-yml
