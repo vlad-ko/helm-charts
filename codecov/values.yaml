@@ -189,6 +189,10 @@ tags:
 
 labels: {}
 
+# Used if you were running github/gitlab/bitbucket enterprise (VCS) and using 
+# your own CA certificate to provision SSL certificates. 
+$ You provide the CA to Codecov so that we know to trust the SSL certificate 
+# in use by your VCS.
 secretMounts: []
 #  - name: scm-ca-cert
 #    secretName: scm-ca-cert
